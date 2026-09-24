@@ -6,6 +6,12 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/framework/sessions/
+/storage/framework/views/
+/storage/framework/cache/
+/storage/logs/laravel.log
+/public/php.ini
+/public/.user.ini
 /vendor
 .env
 .env.backup
