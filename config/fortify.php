@@ -163,7 +163,7 @@ return [
     'features' => [
         // Features::registration(), // Public self-registration is disabled; users are provisioned by admins.
         Features::resetPasswords(),
-        Features::emailVerification(),
+        // Features::emailVerification(), // Disabled until mail is configured
         Features::twoFactorAuthentication([
             'confirm' => true,
             'confirmPassword' => true,

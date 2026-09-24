@@ -6,7 +6,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login')->name('home');
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::view('dashboard', 'dashboard')->name('dashboard');
 
     // Admin foundation route — accessible only to role=admin (403 for other roles)
