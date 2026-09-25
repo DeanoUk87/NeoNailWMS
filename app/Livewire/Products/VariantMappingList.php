@@ -15,11 +15,54 @@ class VariantMappingList extends Component
     public string $filterStatus = 'all'; // all|unmapped|mapped|exception|pending_review
     public string $search = '';
 
+    // Inline resolve panel state
+    public ?int $resolvingVariantId = null;
+    public string $resolveProductSku = '';
+    public ?string $resolveError = null;
+
     protected $queryString = ['filterStatus', 'search'];
 
     public function updatingSearch(): void
     {
         $this->resetPage();
+    }
+
+    public function startResolve(int $variantId): void
+    {
+        $this->resolvingVariantId = $variantId;
+        $this->resolveProductSku  = '';
+        $this->resolveError       = null;
+    }
+
+    public function cancelResolve(): void
+    {
+        $this->resolvingVariantId = null;
+        $this->resolveProductSku  = '';
+        $this->resolveError       = null;
+    }
+
+    public function confirmResolve(): void
+    {
+        $this->resolveError = null;
+        $this->authorize('create', \App\Models\Product::class);
+
+        if (!$this->resolvingVariantId || !$this->resolveProductSku) {
+            $this->resolveError = 'Please enter a product SKU.';
+            return;
+        }
+
+        $product = \App\Models\Product::withoutGlobalScopes()
+            ->where('fulfilment_client_id', auth()->user()->fulfilment_client_id)
+            ->where('internal_sku', trim($this->resolveProductSku))
+            ->first();
+
+        if (!$product) {
+            $this->resolveError = "No product found with SKU \"{$this->resolveProductSku}\" for your client.";
+            return;
+        }
+
+        $this->mapVariant($this->resolvingVariantId, $product->id);
+        $this->cancelResolve();
     }
 
     /**
@@ -94,6 +137,15 @@ class VariantMappingList extends Component
             ->where('mapping_status', 'unmapped')
             ->count();
 
-        return view('livewire.products.variant-mapping-list', compact('variants', 'exceptionCount', 'unmappedCount'));
+        // Products available for manual mapping (active only, same client)
+        $availableProducts = \App\Models\Product::withoutGlobalScopes()
+            ->where('fulfilment_client_id', $clientId)
+            ->where('is_active', true)
+            ->orderBy('internal_sku')
+            ->get(['id', 'internal_sku', 'name']);
+
+        return view('livewire.products.variant-mapping-list', compact(
+            'variants', 'exceptionCount', 'unmappedCount', 'availableProducts'
+        ));
     }
 }

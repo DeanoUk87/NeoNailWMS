@@ -111,6 +111,41 @@
                             @else
                                 <span class="text-xs text-zinc-400">csv import</span>
                             @endif
+
+                            {{-- Resolve button for exceptions and unmapped --}}
+                            @if (in_array($variant->mapping_status, ['exception', 'unmapped', 'pending_review']))
+                                @can('create', App\Models\Product::class)
+                                    <div class="mt-2">
+                                        @if ($resolvingVariantId === $variant->id)
+                                            {{-- Inline resolve panel --}}
+                                            <div class="mt-1 rounded-lg border border-indigo-200 bg-indigo-50 p-3 space-y-2">
+                                                <p class="text-xs font-semibold text-indigo-800">Map to product (manual — locked against imports)</p>
+                                                <select wire:model="resolveProductSku" class="w-full rounded border border-zinc-300 px-2 py-1.5 text-xs focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                                    <option value="">— select a product —</option>
+                                                    @foreach ($availableProducts as $p)
+                                                        <option value="{{ $p->internal_sku }}">{{ $p->internal_sku }} — {{ $p->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                                @if ($resolveError)
+                                                    <p class="text-xs text-red-600">{{ $resolveError }}</p>
+                                                @endif
+                                                <div class="flex gap-2">
+                                                    <button wire:click="confirmResolve" class="rounded bg-indigo-600 px-3 py-1 text-xs font-semibold text-white hover:bg-indigo-700 transition-colors">
+                                                        Confirm mapping
+                                                    </button>
+                                                    <button wire:click="cancelResolve" class="rounded border border-zinc-300 bg-white px-3 py-1 text-xs font-semibold text-zinc-600 hover:bg-zinc-50 transition-colors">
+                                                        Cancel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        @else
+                                            <button wire:click="startResolve({{ $variant->id }})" class="mt-1 rounded px-2 py-1 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 transition-colors">
+                                                Resolve →
+                                            </button>
+                                        @endif
+                                    </div>
+                                @endcan
+                            @endif
                         </td>
                     </tr>
                 @empty
