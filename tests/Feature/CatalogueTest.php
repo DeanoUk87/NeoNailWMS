@@ -297,3 +297,51 @@ test('imported pack quantity is always marked unverified regardless of csv value
     expect($product->pack_qty_confirmed)->toBeFalse(); // Must never be auto-confirmed
     expect($product->packLabel())->toContain('unverified');
 });
+
+// ---------------------------------------------------------------------------
+// 9. Cross-client product_id — DB-level multi-column FK blocks the association
+//    at the database engine, independent of application code.
+// ---------------------------------------------------------------------------
+test('database rejects variant product_id pointing to a different client product', function () {
+    [$clientA] = makeClientUser('admin');
+    [$clientB] = makeClientUser('admin');
+
+    // Create a product belonging to Client A
+    $productA = Product::withoutGlobalScopes()->create([
+        'fulfilment_client_id' => $clientA->id,
+        'internal_sku'         => 'CLIENT-A-PROD',
+        'name'                 => 'Client A Product',
+        'unit_of_measure'      => 'each',
+    ]);
+
+    // Attempt to create a variant for Client B pointing at Client A's product.
+    // The multi-column FK (product_id, fulfilment_client_id) -> products(id, fulfilment_client_id)
+    // requires both columns to match the same products row.
+    // Client B variant (client_id = clientB->id) + productA->id (belongs to clientA) = FK violation.
+    expect(fn () => ShopifyProductVariant::create([
+        'fulfilment_client_id' => $clientB->id,   // Client B
+        'shop_domain'          => 'test.myshopify.com',
+        'variant_gid'          => 'gid://shopify/ProductVariant/99999',
+        'product_id'           => $productA->id,  // Product belongs to Client A — mismatch
+        'mapping_status'       => 'mapped',
+        'provenance'           => 'csv_import',
+    ]))->toThrow(\Illuminate\Database\QueryException::class);
+
+    // Verify the row was NOT written
+    expect(
+        ShopifyProductVariant::where('variant_gid', 'gid://shopify/ProductVariant/99999')->exists()
+    )->toBeFalse();
+
+    // Confirm same-client association still works correctly
+    ShopifyProductVariant::create([
+        'fulfilment_client_id' => $clientA->id,   // Same client as productA
+        'shop_domain'          => 'test.myshopify.com',
+        'variant_gid'          => 'gid://shopify/ProductVariant/11111',
+        'product_id'           => $productA->id,  // Same client — allowed
+        'mapping_status'       => 'mapped',
+        'provenance'           => 'csv_import',
+    ]);
+    expect(
+        ShopifyProductVariant::where('variant_gid', 'gid://shopify/ProductVariant/11111')->exists()
+    )->toBeTrue();
+});
