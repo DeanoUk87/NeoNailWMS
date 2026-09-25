@@ -345,3 +345,43 @@ test('database rejects variant product_id pointing to a different client product
         ShopifyProductVariant::where('variant_gid', 'gid://shopify/ProductVariant/11111')->exists()
     )->toBeTrue();
 });
+
+// ---------------------------------------------------------------------------
+// 10. Delete restriction — a product with mapped variants cannot be deleted
+//     at the database level (RESTRICT). Unmapping first allows deletion.
+// ---------------------------------------------------------------------------
+test('database blocks deletion of a product that has mapped variants', function () {
+    [$clientA] = makeClientUser('admin');
+
+    $product = Product::withoutGlobalScopes()->create([
+        'fulfilment_client_id' => $clientA->id,
+        'internal_sku'         => 'MAPPED-PROD',
+        'name'                 => 'Mapped Product',
+        'unit_of_measure'      => 'each',
+    ]);
+
+    ShopifyProductVariant::create([
+        'fulfilment_client_id' => $clientA->id,
+        'shop_domain'          => 'test.myshopify.com',
+        'variant_gid'          => 'gid://shopify/ProductVariant/RESTRICT-TEST',
+        'product_id'           => $product->id,
+        'mapping_status'       => 'mapped',
+        'provenance'           => 'csv_import',
+    ]);
+
+    // Attempt to delete the product while a variant is still mapped to it.
+    // RESTRICT on the FK means the DB engine blocks this — QueryException fired.
+    expect(fn () => Product::withoutGlobalScopes()->where('id', $product->id)->delete())
+        ->toThrow(\Illuminate\Database\QueryException::class);
+
+    // Confirm product still exists (the delete was rolled back)
+    expect(Product::withoutGlobalScopes()->where('id', $product->id)->exists())->toBeTrue();
+
+    // Deliberately unmap the variant first (set product_id = null)
+    ShopifyProductVariant::where('variant_gid', 'gid://shopify/ProductVariant/RESTRICT-TEST')
+        ->update(['product_id' => null, 'mapping_status' => 'unmapped']);
+
+    // Now deletion of the product succeeds
+    Product::withoutGlobalScopes()->where('id', $product->id)->delete();
+    expect(Product::withoutGlobalScopes()->where('id', $product->id)->exists())->toBeFalse();
+});
