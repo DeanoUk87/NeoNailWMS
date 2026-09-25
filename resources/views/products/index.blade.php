@@ -1,5 +1,3 @@
 <x-layouts::app :title="'Products'">
-    <flux:main>
-        @livewire('products.product-list')
-    </flux:main>
+    @livewire('products.product-list')
 </x-layouts::app>

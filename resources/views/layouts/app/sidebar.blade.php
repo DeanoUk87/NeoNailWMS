@@ -16,6 +16,15 @@
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+
+                <flux:sidebar.group :heading="__('Catalogue')" class="grid">
+                    <flux:sidebar.item icon="layout-grid" :href="route('products.index')" :current="request()->routeIs('products.*')" wire:navigate>
+                        {{ __('Products') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="chevrons-up-down" :href="route('products.mappings')" :current="request()->routeIs('products.mappings')" wire:navigate>
+                        {{ __('Variant Mappings') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
             </flux:sidebar.nav>
 
             <flux:spacer />

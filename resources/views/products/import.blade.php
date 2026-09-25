@@ -1,5 +1,3 @@
 <x-layouts::app :title="'Import CSV'">
-    <flux:main>
-        @livewire('products.import-wizard')
-    </flux:main>
+    @livewire('products.import-wizard')
 </x-layouts::app>
