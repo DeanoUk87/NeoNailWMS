@@ -30,7 +30,10 @@ use Laravel\Fortify\TwoFactorAuthenticatable;
  * @property Carbon|null $created_at
  * @property Carbon|null $updated_at
  */
-#[Fillable(['name', 'email', 'password', 'role', 'fulfilment_client_id'])]
+// role and fulfilment_client_id are intentionally excluded from fillable.
+// They must only be set via forceFill() in admin-controlled provisioning code
+// (DemoSeeder, Tinker) to prevent privilege escalation via mass assignment.
+#[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'two_factor_secret', 'two_factor_recovery_codes', 'remember_token'])]
 class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
 {

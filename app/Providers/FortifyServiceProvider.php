@@ -69,6 +69,12 @@ class FortifyServiceProvider extends ServiceProvider
             return Limit::perMinute(5)->by($throttleKey);
         });
 
+        // Rate-limit password-reset link requests to prevent email enumeration and
+        // reset-link spam. 3 requests per 15 minutes per IP.
+        RateLimiter::for('password-reset', function (Request $request) {
+            return Limit::perMinutes(15, 3)->by($request->ip());
+        });
+
         RateLimiter::for('passkeys', function (Request $request) {
             $credentialId = $request->input('credential.id');
 

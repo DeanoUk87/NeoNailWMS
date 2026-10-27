@@ -5,6 +5,7 @@ namespace App\Livewire\Products;
 use App\Models\ProductImport;
 use App\Services\ProductImportService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Livewire\Attributes\Locked;
 use Livewire\Component;
 use Livewire\WithFileUploads;
 
@@ -23,11 +24,18 @@ class ImportWizard extends Component
     use AuthorizesRequests;
     use WithFileUploads;
 
+    // #[Locked] prevents clients from setting $step directly via wire:model or $set().
+    // Step transitions only happen through explicit server-side method calls.
+    #[Locked]
     public string $step = 'upload';
     public string $importType = 'products';
     public $csvFile = null;
     public array $csvHeaders = [];
     public array $columnMapping = [];
+
+    // #[Locked] prevents a client from supplying an arbitrary importId
+    // and confirming another user's import record.
+    #[Locked]
     public ?int $importId = null;
 
     // Step 3 preview data
@@ -106,6 +114,23 @@ class ImportWizard extends Component
         $this->errorRows       = $import->error_rows;
 
         $this->step = 'preview';
+    }
+
+    public function backToPreview(): void
+    {
+        if ($this->step !== 'confirm') {
+            return;
+        }
+        $this->step = 'preview';
+    }
+
+    public function advanceToConfirm(): void
+    {
+        // Server-side step guard — can only advance from 'preview'
+        if ($this->step !== 'preview') {
+            abort(403, 'Invalid step transition.');
+        }
+        $this->step = 'confirm';
     }
 
     public function confirmImport(): void

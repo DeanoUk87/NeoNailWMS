@@ -68,8 +68,9 @@ class VariantMappingList extends Component
     /**
      * Manually map a variant to a product.
      * Sets provenance=manual so future imports will never overwrite this.
+     * Protected — not a direct Livewire action; called only via confirmResolve().
      */
-    public function mapVariant(int $variantId, int $productId): void
+    protected function mapVariant(int $variantId, int $productId): void
     {
         $this->authorize('create', \App\Models\Product::class); // admin/supervisor only
 

@@ -68,7 +68,7 @@
                     <input wire:model="pack_qty_confirmed" type="checkbox" class="mt-0.5 size-4 rounded border-zinc-300 text-indigo-600 focus:ring-indigo-500" />
                     <div>
                         <p class="text-sm font-semibold text-amber-900">Pack quantity physically verified</p>
-                        <p class="mt-0.5 text-xs text-amber-700">Only tick this after NeoNail has physically counted and confirmed the pack size. Until confirmed, the system marks the quantity as <strong>unverified</strong> and will never use it to calculate individual item counts. A pack is never silently treated as a single item.</p>
+                        <p class="mt-0.5 text-xs text-amber-700">Only tick this after the pack size has been physically counted and confirmed. Until confirmed, the system marks the quantity as <strong>unverified</strong> and will never use it to calculate individual item counts. A pack is never silently treated as a single item.</p>
                     </div>
                 </label>
             </div>

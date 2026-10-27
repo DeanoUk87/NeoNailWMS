@@ -144,7 +144,7 @@
                 </div>
             @endif
             <div class="flex gap-3">
-                <button wire:click="$set('step', 'confirm')" class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">Continue →</button>
+                <button wire:click="advanceToConfirm" class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">Continue →</button>
                 <button wire:click="restart" class="rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors">Start Over</button>
             </div>
         </div>
@@ -168,7 +168,7 @@
                     <span wire:loading.remove>Confirm Import</span>
                     <span wire:loading>Importing…</span>
                 </button>
-                <button wire:click="$set('step', 'preview')" class="rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors">← Back</button>
+                <button wire:click="backToPreview" class="rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors">← Back</button>
             </div>
         </div>
     @endif

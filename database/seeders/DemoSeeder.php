@@ -24,31 +24,35 @@ class DemoSeeder extends Seeder
         // --- Fulfilment Client ---
         $client = FulfilmentClient::firstOrCreate(
             ['slug' => 'neonail-uk'],
-            ['name' => 'NeoNail UK', 'is_active' => true]
+            ['name' => 'NeoNail UK', 'is_active' => true] // Client name stays — it is the actual client
         );
 
         // --- Users ---
-        $admin = User::firstOrCreate(
-            ['email' => 'admin@neonail.test'],
-            [
+        // role and fulfilment_client_id are not in fillable — use forceFill for admin provisioning.
+        $admin = User::where('email', 'admin@neonail.test')->first();
+        if (!$admin) {
+            $admin = new User;
+            $admin->forceFill([
                 'name'                 => 'Admin User',
+                'email'                => 'admin@neonail.test',
                 'password'             => Hash::make('password'),
                 'role'                 => 'admin',
                 'fulfilment_client_id' => $client->id,
                 'email_verified_at'    => now(),
-            ]
-        );
+            ])->save();
+        }
 
-        User::firstOrCreate(
-            ['email' => 'operator@neonail.test'],
-            [
+        if (!User::where('email', 'operator@neonail.test')->exists()) {
+            $op = new User;
+            $op->forceFill([
                 'name'                 => 'Warehouse Operator',
+                'email'                => 'operator@neonail.test',
                 'password'             => Hash::make('password'),
                 'role'                 => 'operator',
                 'fulfilment_client_id' => $client->id,
                 'email_verified_at'    => now(),
-            ]
-        );
+            ])->save();
+        }
 
         // --- Products ---
         // Item 4504 — the nail files with unverified pack qty

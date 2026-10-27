@@ -10,10 +10,10 @@ use Illuminate\Support\Facades\Schema;
  * Design decisions:
  * - No parent-product merchandising system at this stage. Each colour/size
  *   variant is its own row (maps to one Shopify variant GID).
- * - manufacturer_barcode is NULLABLE. Many NeoNail items (e.g. nail files)
+ * - manufacturer_barcode is NULLABLE. Many items (e.g. nail files)
  *   have no EAN. Use internal_sku + scan_code for those.
  * - pack_qty and pack_qty_confirmed are separated deliberately. A pack
- *   quantity must be physically verified by NeoNail before it is trusted.
+ *   quantity must be physically verified before it is trusted.
  *   pack_qty_confirmed = false means "do not treat this pack as N items".
  * - unit_of_measure is free-text but required (e.g. "each", "pack", "case").
  * - Client scoping via fulfilment_client_id with no FK constraint (matches

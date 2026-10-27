@@ -47,7 +47,10 @@ class ProductImportService
         string $csvContent,
         array $columnMapping
     ): ProductImport {
-        $storedFilename = 'imports/' . Str::uuid() . '_' . $originalFilename;
+        // basename() strips any path traversal characters (e.g. ../../) from the
+        // client-supplied filename before it is used in the storage path.
+        $safeFilename   = basename($originalFilename);
+        $storedFilename = 'imports/' . Str::uuid() . '_' . $safeFilename;
         Storage::disk('private')->put($storedFilename, $csvContent);
 
         return ProductImport::create([

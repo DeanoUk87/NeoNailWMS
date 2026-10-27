@@ -1,0 +1,5 @@
+internal_sku,name,unit_of_measure,manufacturer_barcode,pack_qty
+TOP-001,Top Coat 15ml,each,5901234567921,
+BUFF-SET,Nail Buffing Set,pack,,4
+CUTICLE-OIL,Cuticle Oil 7.5ml,each,5901234567938,
+DUPE-BC,Duplicate Barcode Test,each,5901234567890,
