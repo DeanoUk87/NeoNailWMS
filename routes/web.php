@@ -2,7 +2,10 @@
 
 use App\Http\Controllers\AdminFoundationController;
 use App\Http\Controllers\WarehouseController;
+use App\Models\Location;
 use App\Models\Product;
+use App\Models\User;
+use App\Models\Warehouse;
 use Illuminate\Support\Facades\Route;
 
 Route::redirect('/', '/login')->name('home');
@@ -36,6 +39,39 @@ Route::middleware(['auth'])->group(function () {
 
         // CSV import wizard — admin & supervisor only (enforced in component)
         Route::get('/import', fn () => view('products.import'))->name('import');
+    });
+
+    // -------------------------------------------------------------------------
+    // Warehouse and Location Management (Task 004 — Module A)
+    // -------------------------------------------------------------------------
+    Route::prefix('warehouses')->name('warehouses.')->group(function () {
+        Route::get('/', fn () => view('warehouses.index'))->name('index');
+        Route::get('/create', fn () => view('warehouses.create'))->name('create');
+        Route::get('/{warehouse}/edit', function (Warehouse $warehouse) {
+            return view('warehouses.edit', compact('warehouse'));
+        })->name('edit');
+
+        // Locations within a warehouse
+        Route::get('/{warehouse}/locations', function (Warehouse $warehouse) {
+            return view('warehouses.locations', compact('warehouse'));
+        })->name('locations');
+        Route::get('/{warehouse}/locations/create', function (Warehouse $warehouse) {
+            return view('warehouses.location-create', compact('warehouse'));
+        })->name('locations.create');
+        Route::get('/{warehouse}/locations/{location}/edit', function (Warehouse $warehouse, Location $location) {
+            return view('warehouses.location-edit', compact('warehouse', 'location'));
+        })->name('locations.edit');
+    });
+
+    // -------------------------------------------------------------------------
+    // User Management (Task 004 — Module B) — admin only (enforced in Livewire)
+    // -------------------------------------------------------------------------
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/', fn () => view('users.index'))->name('index');
+        Route::get('/create', fn () => view('users.create'))->name('create');
+        Route::get('/{user}/edit', function (User $user) {
+            return view('users.edit', compact('user'));
+        })->name('edit');
     });
 });
 

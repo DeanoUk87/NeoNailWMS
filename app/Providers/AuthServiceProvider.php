@@ -2,27 +2,25 @@
 
 namespace App\Providers;
 
+use App\Models\Location;
 use App\Models\Product;
+use App\Models\User;
 use App\Models\Warehouse;
+use App\Policies\LocationPolicy;
 use App\Policies\ProductPolicy;
+use App\Policies\UserManagementPolicy;
 use App\Policies\WarehousePolicy;
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 
 class AuthServiceProvider extends ServiceProvider
 {
-    /**
-     * The model to policy mappings for the application.
-     *
-     * @var array<class-string, class-string>
-     */
     protected $policies = [
         Warehouse::class => WarehousePolicy::class,
         Product::class   => ProductPolicy::class,
+        Location::class  => LocationPolicy::class,
+        User::class      => UserManagementPolicy::class,
     ];
 
-    /**
-     * Register any authentication / authorization services.
-     */
     public function boot(): void
     {
         $this->registerPolicies();

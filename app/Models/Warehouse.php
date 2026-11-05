@@ -15,6 +15,13 @@ class Warehouse extends Model
     protected $fillable = [
         'fulfilment_client_id',
         'name',
+        'address',
+        'notes',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
     ];
 
     /**

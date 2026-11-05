@@ -7,19 +7,29 @@ use App\Models\Warehouse;
 
 class WarehousePolicy
 {
-    /**
-     * Determine whether the user can view the warehouse.
-     *
-     * Returns true only if the authenticated user belongs to the same
-     * fulfilment client as the warehouse. This provides explicit
-     * tenant-level authorization on top of the Warehouse model's
-     * global scope.
-     *
-     * Cross-client access receives a 403 Forbidden response (not 404),
-     * making the access-denial explicit to the caller.
-     */
+    public function viewAny(User $user): bool
+    {
+        return true; // All authenticated roles can list their client's warehouses
+    }
+
     public function view(User $user, Warehouse $warehouse): bool
     {
         return $user->fulfilment_client_id === $warehouse->fulfilment_client_id;
+    }
+
+    public function create(User $user): bool
+    {
+        return $user->role === 'admin';
+    }
+
+    public function update(User $user, Warehouse $warehouse): bool
+    {
+        return $user->role === 'admin'
+            && $user->fulfilment_client_id === $warehouse->fulfilment_client_id;
+    }
+
+    public function delete(User $user, Warehouse $warehouse): bool
+    {
+        return false; // Warehouses are deactivated, not deleted
     }
 }

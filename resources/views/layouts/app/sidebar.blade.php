@@ -18,20 +18,34 @@
                 </flux:sidebar.group>
 
                 <flux:sidebar.group :heading="__('Catalogue')" class="grid">
-                    <flux:sidebar.item icon="layout-grid" :href="route('products.index')" :current="request()->routeIs('products.*')" wire:navigate>
+                    <flux:sidebar.item icon="layout-grid" :href="route('products.index')" :current="request()->routeIs('products.index') || request()->routeIs('products.create') || request()->routeIs('products.edit')" wire:navigate>
                         {{ __('Products') }}
                     </flux:sidebar.item>
                     <flux:sidebar.item icon="chevrons-up-down" :href="route('products.mappings')" :current="request()->routeIs('products.mappings')" wire:navigate>
                         {{ __('Variant Mappings') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+
+                <flux:sidebar.group :heading="__('Warehouse')" class="grid">
+                    <flux:sidebar.item icon="building-storefront" :href="route('warehouses.index')" :current="request()->routeIs('warehouses.*')" wire:navigate>
+                        {{ __('Warehouses & Locations') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
+
+                @if (auth()->user()->role === 'admin')
+                <flux:sidebar.group :heading="__('Administration')" class="grid">
+                    <flux:sidebar.item icon="users" :href="route('users.index')" :current="request()->routeIs('users.*')" wire:navigate>
+                        {{ __('User Management') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
+                @endif
             </flux:sidebar.nav>
 
             <flux:spacer />
 
             @if (auth()->user()->role === 'admin')
             <flux:sidebar.nav>
-                <flux:sidebar.group :heading="__('Admin')" class="grid">
+                <flux:sidebar.group :heading="__('System')" class="grid">
                     <flux:sidebar.item icon="shield-check" :href="route('admin.foundation')" :current="request()->routeIs('admin.foundation')" wire:navigate>
                         {{ __('Foundation') }}
                     </flux:sidebar.item>
