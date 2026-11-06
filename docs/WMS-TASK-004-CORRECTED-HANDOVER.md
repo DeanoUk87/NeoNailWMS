@@ -291,26 +291,71 @@ Which email provider should be used? This is not a technical decision — it dep
 
 ## 6. Screenshots
 
-Screenshots cannot be embedded directly in this Markdown document. The following screenshots were taken during the browser verification session on 6 November 2026 and are available from Dean:
+All screenshots taken 6 November 2026 from `https://nnuk.wms.mp-transport.co.uk`. Files committed to the repository.
 
-| Screenshot | File | Contents |
+### Screenshot 1 — `task004-01-warehouse-list.png`
+**URL:** `/warehouses`
+
+Shows: MP Transport — Main Warehouse, Active status, 4 locations link. Sidebar displays Warehouses & Locations (Warehouse group) and User Management (Administration group) — confirming admin navigation is correct.
+
+### Screenshot 2 — `task004-02-location-form-barcode.png`
+**URL:** `/warehouses/{id}/locations/create`
+
+Shows: New Location form with Section=01, Shelf=02, Bin=03 filled in. The Barcode / Reference field placeholder shows the expected `A01-S02-B03` format. Demonstrates the auto-generation UI before values are typed.
+
+### Screenshot 3 — `task004-03-duplicate-barcode-error.png`
+**URL:** `/warehouses/{id}/locations/create`
+
+Shows: Location form with Zone=A, Section=01, Shelf=01, Bin=01. The Barcode field has **auto-populated `A01-S01-B01`** and the Display Name has been filled in as "Ambient Rack 1 Shelf 1 Bin 1". This is the form state before saving — confirming auto-generation is working.
+
+### Screenshot 4 — `task004-03-duplicate-barcode-error#2.png`
+**URL:** `/warehouses/{id}/locations/create`
+
+Shows: Attempting to save a second location with barcode `A01-S01-B01`. The barcode field is highlighted red and displays the error message: **"The barcode has already been taken."** The form cannot be submitted with a duplicate barcode.
+
+### Screenshot 5 — `task004-04-location-list-all-filter.png`
+**URL:** `/warehouses/{id}/locations` (filter: All)
+
+Shows: 4 locations in the warehouse:
+- `A01-S01-B01` — Ambient Rack 1 Shelf 1 Bin 1 — **A — Ambient Storage** (green badge) — **Active**
+- `A01-S01-B02` — Ambient Rack 1 Shelf 1 Bin 2 — **A — Ambient Storage** (green badge) — **Inactive** (grey badge)
+- `I01` — Inbound Area — **I — Inbound Holding** (amber badge) — Active
+- `Q01` — Quarantine Area — **Q — Quarantine** (amber badge) — Active
+
+Confirms: deactivated location (`A01-S01-B02`) is visible under "All" filter with Inactive badge. Zone colour coding is working (green for eligible zones A/C, amber for restricted zones I/Q/D/R).
+
+### Screenshot 6 — `task004-05-user-management-admin.png`
+**URL:** `/users` (logged in as admin)
+
+Shows: User list with 4 users:
+- Admin (`admin@mp-transport.co.uk`) — Admin role — Active — "(you)" label
+- Admin User (`admin@neonail.test`) — Admin role — Active
+- Test Operator (`operator2@neonail.test`) — Operator role — Active
+- Warehouse Operator (`operator@neonail.test`) — Operator role — Active
+
+Confirms: user list is client-scoped, role badges display correctly, admin cannot edit their own account (no Edit button on the "(you)" row).
+
+### Screenshot 7 — `task004-06-operator-no-admin.png`
+**URL:** `/dashboard` (logged in as Test Operator)
+
+Shows: Dashboard logged in as "Test Operator" (initials TO shown bottom-left). Sidebar contains:
+- Platform: Dashboard
+- Catalogue: Products, Variant Mappings
+- Warehouse: Warehouses & Locations
+
+**Administration group is absent. User Management link is absent.** Confirms operator role restriction is enforced at the UI level (backed by policy enforcement at the server level — test 36/37).
+
+### Screenshot evidence summary
+
+| Verification point | Screenshot | Result |
 |---|---|---|
-| Warehouse list | `warehouse.png` (already shared) | Empty warehouse list with sidebar showing Warehouses & Locations and User Management |
-
-### Additional screenshots required (Paul's request)
-
-The following screenshots are still needed and can be taken immediately by Dean navigating to the live site:
-
-| Required screenshot | URL | Instructions for Dean |
-|---|---|---|
-| Warehouse list with created warehouse | `/warehouses` | After creating MP Transport warehouse |
-| New location form with auto-generated barcode | `/warehouses/{id}/locations/create` | Fill in Zone=A, Section=01, Shelf=01, Bin=01 and screenshot before saving |
-| Duplicate barcode error | `/warehouses/{id}/locations/create` | Try to create barcode A01-S01-B01 when it already exists |
-| Location list showing active/inactive filter | `/warehouses/{id}/locations` | With filter set to "All" |
-| User list (admin view) | `/users` | Shows admin user, role badge |
-| Operator view — no User Management | `/dashboard` as operator | Sidebar showing no Administration group |
-
-All of these screens are live and accessible at `https://nnuk.wms.mp-transport.co.uk` right now. Dean can take these screenshots at any time.
+| Warehouse created and listed | 01 | ✅ CONFIRMED |
+| Barcode auto-generation from hierarchy fields | 02 & 03 | ✅ CONFIRMED |
+| Duplicate barcode prevention | 04 | ✅ CONFIRMED — "The barcode has already been taken" |
+| Deactivated location visible under All filter | 05 | ✅ CONFIRMED — Inactive badge shown |
+| Zone colour coding (eligible vs restricted) | 05 | ✅ CONFIRMED — green/amber badges |
+| Admin can see and manage all users | 06 | ✅ CONFIRMED |
+| Operator has no User Management access | 07 | ✅ CONFIRMED — Administration group absent |
 
 ---
 
@@ -331,7 +376,7 @@ All of these screens are live and accessible at `https://nnuk.wms.mp-transport.c
 | **Supervisor permissions in browser** | ❌ NOT TESTED | Requires supervisor account creation |
 | **Password reset end to end** | ⏳ PENDING | Requires SMTP configuration |
 | **Email delivery of reset link** | ⏳ PENDING | Requires SMTP — currently log-only |
-| **Screenshots (all except warehouse.png)** | ❌ NOT TAKEN | Available immediately — requires Dean to navigate site |
+| **Screenshots (all 7)** | ✅ TESTED | Taken 6 November 2026 — see Section 6 |
 | **Merge to main / production release** | ⏳ PENDING | Requires Paul and Craig sign-off |
 
 ---
