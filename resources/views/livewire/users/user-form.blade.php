@@ -66,6 +66,9 @@
                 <button wire:click.prevent="sendPasswordReset" type="button" class="rounded-lg border border-zinc-300 bg-white px-4 py-2 text-sm font-semibold text-zinc-700 hover:bg-zinc-50 transition-colors">
                     Send Password Reset Email
                 </button>
+                @if ($resetMessage)
+                    <p class="mt-3 text-sm font-semibold text-emerald-700">✓ {{ $resetMessage }}</p>
+                @endif
             </div>
         @endif
 

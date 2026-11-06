@@ -21,6 +21,7 @@ class UserForm extends Component
     public string $role     = 'operator';
     public bool   $is_active = true;
     public string $newPassword = '';
+    public string $resetMessage = '';
 
     // Editing mode: 'create' or 'edit'
     public string $mode = 'create';
@@ -136,7 +137,7 @@ class UserForm extends Component
 
         UserAuditLog::record($target, auth()->user(), 'password_reset_sent');
 
-        session()->flash('success', "Password reset link sent to {$target->email}.");
+        $this->resetMessage = "Password reset link sent to {$target->email}.";
     }
 
     public function render()
