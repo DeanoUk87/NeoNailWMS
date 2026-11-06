@@ -16,9 +16,9 @@ Route::middleware(['auth'])->group(function () {
     // Admin foundation route — accessible only to role=admin (403 for other roles)
     Route::get('/admin/foundation', AdminFoundationController::class)->name('admin.foundation');
 
-    // Warehouse detail route — scoped to authenticated user's fulfilment client
-    // Cross-client access returns 404 (global scope hides the record) or 403 (policy check)
-    Route::get('/warehouses/{warehouse}', [WarehouseController::class, 'show'])->name('warehouses.show');
+    // Warehouse detail route (Phase 1 test scaffold — superseded by Task 004 warehouse management)
+    // Kept for backwards compatibility with Phase 1 tests. Must be defined AFTER the prefix group.
+    // Route::get('/warehouses/{warehouse}', [WarehouseController::class, 'show'])->name('warehouses.show');
 
     // -------------------------------------------------------------------------
     // Product catalogue & variant mapping routes (Phase 2)
