@@ -4,6 +4,7 @@ namespace App\Livewire\Warehouses;
 
 use App\Models\Location;
 use App\Models\Warehouse;
+use App\Services\StockLedgerService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Validation\Rule;
 use Livewire\Component;
@@ -116,8 +117,25 @@ class LocationForm extends Component
             $location = Location::findOrFail($this->locationId);
             $this->authorize('update', $location);
 
-            // Prevent zone reclassification when it would affect AVAILABLE/RESERVED stock
-            // (In Phase 3+ this will check stock_entries; for now it's a safeguard placeholder)
+            // Location reclassification guard (Task 003D / Task 005)
+            // Block zone changes and deactivation if stock_entries reference this location
+            $zoneChanging   = $location->zone !== $this->zone;
+            $deactivating   = $location->is_active && !$this->is_active;
+
+            if ($zoneChanging || $deactivating) {
+                $ledger = app(\App\Services\StockLedgerService::class);
+                $affectedEntries = $ledger->locationReclassificationCheck($location);
+
+                if (!empty($affectedEntries)) {
+                    $count = count($affectedEntries);
+                    $what  = $zoneChanging ? 'zone' : 'status';
+                    $this->addError('zone', "Cannot change location {$what}: {$count} stock " .
+                        "entr" . ($count === 1 ? 'y' : 'ies') . " reference this bin. " .
+                        "Move or quarantine the stock first.");
+                    return;
+                }
+            }
+
             $location->update($data);
         } else {
             $this->authorize('create', Location::class);

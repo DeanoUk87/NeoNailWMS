@@ -2,9 +2,9 @@
 
 **Project:** MP Transport Warehouse Management System  
 **Branch:** `feature/catalogue-and-mapping`  
-**Latest commit:** `aee3d86`  
+**Latest commit:** `b601fdd`  
 **Date:** 6 November 2026  
-**Addresses:** Paul's six review points from the Task 004 provisional acceptance
+**Addresses:** Paul's six review points from the Task 004 provisional acceptance — all resolved
 
 ---
 
@@ -283,9 +283,22 @@ Test with:
 # >>> Mail::raw('Test', fn($m) => $m->to('your@email.com')->subject('WMS test'));
 ```
 
-### Decision required from Paul/Craig
+### SMTP — Configured and Tested ✅
 
-Which email provider should be used? This is not a technical decision — it depends on what accounts MP Transport already has. If cPanel's built-in Exim mail server is already configured for outbound mail on this server, it may be the simplest option with no additional cost.
+SMTP is fully operational using the existing MP Transport mail server. Configured 6 November 2026.
+
+| Setting | Value |
+|---|---|
+| Provider | cPanel Exim — `cloud.mp-transport.co.uk` |
+| Host | `mail.mp-transport.co.uk` |
+| Port | 465 (SMTPS) |
+| Username | `no-reply@mp-transport.co.uk` |
+| From address | `no-reply@mp-transport.co.uk` |
+| From name | Warehouse Management System |
+
+**Verified:** `235 Authentication succeeded` via direct SMTP test. Test email delivered successfully. Password reset link delivered, clicked, and new password confirmed working.
+
+**Note:** The password is stored in the server `.env` only and is not committed to the repository. The `.env.example` file documents the structure without the password.
 
 ---
 
@@ -345,6 +358,34 @@ Shows: Dashboard logged in as "Test Operator" (initials TO shown bottom-left). S
 
 **Administration group is absent. User Management link is absent.** Confirms operator role restriction is enforced at the UI level (backed by policy enforcement at the server level — test 36/37).
 
+### Screenshot 8 — `task004-07-create-user-form.png`
+**URL:** `/users/create`
+
+Shows: New User form filled in — Full Name: "Test Supervisor", Email: `supervisor@neonail.test`, Role: "Supervisor — approve exceptions, view reports", password obscured. Confirms the user creation form is functional via the UI.
+
+### Screenshot 9 — `task004-08-user-created.png`
+**URL:** `/users`
+
+Shows: Green success banner "User Test Supervisor created." All 5 users visible with correct role badges — Supervisor badge shown in amber. Confirms user was created via the UI form and appeared in the list immediately.
+
+### Screenshot 10 — `task004-09-supervisor-view.png`
+**URL:** `/dashboard` (logged in as Test Supervisor)
+
+Shows: Dashboard logged in as "Test Supervisor" (initials TS shown bottom-left). Sidebar shows Platform, Catalogue, Warehouse — **no Administration group**. Confirms supervisor role has the same access restriction as operator for user management.
+
+### Screenshot 11 — `task004-10-password-reset-sent.png`
+**URL:** `/users/{id}/edit`
+
+Shows: Edit User form for Test Supervisor with email `mpt-portal@mp-transport.co.uk`. After clicking "Send Password Reset Email", the inline confirmation appears: **"✓ Password reset link sent to mpt-portal@mp-transport.co.uk."**
+
+The app name in the sidebar shows **MP WMS** (correctly renamed from NeoNailWMS).
+
+**End-to-end password reset verified:**
+- Email delivered to `mpt-portal@mp-transport.co.uk` via `no-reply@mp-transport.co.uk` SMTP
+- Reset link in email clicked
+- New password set via the reset form
+- Login with new password confirmed in private browser session
+
 ### Screenshot evidence summary
 
 | Verification point | Screenshot | Result |
@@ -356,6 +397,11 @@ Shows: Dashboard logged in as "Test Operator" (initials TO shown bottom-left). S
 | Zone colour coding (eligible vs restricted) | 05 | ✅ CONFIRMED — green/amber badges |
 | Admin can see and manage all users | 06 | ✅ CONFIRMED |
 | Operator has no User Management access | 07 | ✅ CONFIRMED — Administration group absent |
+| Create user via UI form | 08 | ✅ CONFIRMED |
+| User appears in list after creation | 09 | ✅ CONFIRMED — with Supervisor amber badge |
+| Supervisor has no User Management access | 10 | ✅ CONFIRMED — identical restriction to Operator |
+| Password reset email sent and confirmed | 11 | ✅ CONFIRMED — green inline message |
+| Password reset link works end-to-end | — | ✅ CONFIRMED — new password logs in (private browser) |
 
 ---
 
@@ -371,26 +417,27 @@ Shows: Dashboard logged in as "Test Operator" (initials TO shown bottom-left). S
 | Operator: no User Management in sidebar | ✅ TESTED | Browser |
 | Operator: cannot create/edit products | ✅ TESTED | Browser |
 | Credential exclusion from audit log | ✅ TESTED | Code review — no password/hash/token in audit log |
-| **Create user via UI form** | ❌ NOT TESTED | Requires browser session by Dean |
-| **Log in as newly-created user** | ❌ NOT TESTED | Requires above |
-| **Supervisor permissions in browser** | ❌ NOT TESTED | Requires supervisor account creation |
-| **Password reset end to end** | ⏳ PENDING | Requires SMTP configuration |
-| **Email delivery of reset link** | ⏳ PENDING | Requires SMTP — currently log-only |
-| **Screenshots (all 7)** | ✅ TESTED | Taken 6 November 2026 — see Section 6 |
+| **Create user via UI form** | ✅ TESTED | Screenshot 08 — form filled and submitted |
+| **Log in as newly-created user** | ✅ TESTED | Test Supervisor created and logged in |
+| **Supervisor permissions in browser** | ✅ TESTED | Screenshot 10 — no Administration group |
+| **Password reset email sent** | ✅ TESTED | Screenshot 11 — green confirmation shown |
+| **Password reset email delivered** | ✅ TESTED | Received at `mpt-portal@mp-transport.co.uk` |
+| **Reset link works end-to-end** | ✅ TESTED | New password set and login confirmed |
+| **SMTP configured** | ✅ TESTED | `no-reply@mp-transport.co.uk` / port 465 / SMTPS |
+| **Screenshots (all 11)** | ✅ TESTED | All taken from live site 6 November 2026 |
 | **Merge to main / production release** | ⏳ PENDING | Requires Paul and Craig sign-off |
 
 ---
 
 ## 8. Actions Required Before Operational Sign-Off
 
-| Action | Owner | Prerequisite |
+| Action | Owner | Status |
 |---|---|---|
-| Take screenshots listed in Section 6 | Dean | Immediate — site is live |
-| Create a test user via UI and log in as them | Dean | Immediate |
-| Confirm SMTP provider | Paul/Craig | Business decision |
-| Configure SMTP and test password reset email delivery | Dean | After SMTP provider chosen |
-| Confirm outstanding business decisions BD-01 through BD-11 | Paul/Craig | Before Phase 3 |
-| Sign off corrected handover | Paul/Craig | After above items complete |
+| All 11 screenshots taken | Dean | ✅ Complete |
+| Create test user via UI and log in | Dean | ✅ Complete |
+| SMTP configured and tested end-to-end | Dean | ✅ Complete |
+| Confirm outstanding business decisions BD-01 through BD-11 | Paul/Craig | ⏳ Pending |
+| Sign off corrected handover | Paul/Craig | ⏳ Pending |
 
 ---
 
