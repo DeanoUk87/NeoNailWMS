@@ -360,3 +360,58 @@ test('product policy still scopes to client', function () {
     )->toBe(0); // No products seeded for client B
     expect(\App\Models\Product::count())->toBe(0); // Global scope: no clientA products either
 });
+
+// ===========================================================================
+// HTTP-LEVEL CROSS-CLIENT SECURITY (Paul's review point 2)
+// Tests that URL-level access to another client's warehouse/location returns
+// 404, enforced by the Eloquent global scope on route model binding.
+// These complement the policy-level tests above.
+// ===========================================================================
+
+test('HTTP: admin from client A gets 404 accessing client B warehouse by URL', function () {
+    $clientA = FulfilmentClient::factory()->create();
+    $clientB = FulfilmentClient::factory()->create();
+
+    $adminA  = makeUser('admin', $clientA->id);
+    $whB     = Warehouse::withoutGlobalScopes()->create([
+        'fulfilment_client_id' => $clientB->id,
+        'name'                 => 'Client B Warehouse',
+        'is_active'            => true,
+    ]);
+
+    // The FulfilmentClientScope on Warehouse hides whB from adminA's queries.
+    // Route model binding resolves {warehouse} through the global scope,
+    // so it finds no matching record and returns 404.
+    $this->actingAs($adminA)
+         ->get("/warehouses/{$whB->id}/edit")
+         ->assertNotFound();
+});
+
+test('HTTP: admin from client A gets 404 accessing client B warehouse locations by URL', function () {
+    $clientA = FulfilmentClient::factory()->create();
+    $clientB = FulfilmentClient::factory()->create();
+
+    $adminA  = makeUser('admin', $clientA->id);
+    $whB     = Warehouse::withoutGlobalScopes()->create([
+        'fulfilment_client_id' => $clientB->id,
+        'name'                 => 'Client B Warehouse',
+        'is_active'            => true,
+    ]);
+
+    $this->actingAs($adminA)
+         ->get("/warehouses/{$whB->id}/locations")
+         ->assertNotFound();
+});
+
+test('HTTP: unauthenticated request to warehouses is redirected to login', function () {
+    $this->get('/warehouses')->assertRedirect('/login');
+    $this->get('/warehouses/create')->assertRedirect('/login');
+    $this->get('/warehouses/1/edit')->assertRedirect('/login');
+    $this->get('/warehouses/1/locations')->assertRedirect('/login');
+});
+
+test('HTTP: unauthenticated request to users is redirected to login', function () {
+    $this->get('/users')->assertRedirect('/login');
+    $this->get('/users/create')->assertRedirect('/login');
+    $this->get('/users/1/edit')->assertRedirect('/login');
+});
