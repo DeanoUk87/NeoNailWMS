@@ -50,12 +50,16 @@ test('admin from client A cannot access client B warehouse', function () {
         'name' => 'Client B Warehouse',
     ]);
 
-    // Client A's admin requests Client B's warehouse
-    $response = $this->actingAs($adminA)->get("/warehouses/{$warehouseB->id}");
+    // The Phase 1 /warehouses/{warehouse} show route is superseded by Task 004.
+    // Cross-client isolation is now enforced at policy level (also tested in Task004Test).
+    // Verify via policy: admin A cannot view or update warehouse B.
+    $policy = new \App\Policies\WarehousePolicy;
+    expect($policy->view($adminA, $warehouseB))->toBeFalse();
+    expect($policy->update($adminA, $warehouseB))->toBeFalse();
 
-    // The global scope hides Client B's warehouse from Client A's query,
-    // so route model binding throws a 404. We assert either 404 or 403.
-    expect($response->status())->toBeIn([403, 404]);
+    // Also verify via global scope: admin A sees 0 warehouses (client B's are hidden)
+    \Illuminate\Support\Facades\Auth::login($adminA);
+    expect(Warehouse::count())->toBe(0);
 });
 
 test('login is throttled after repeated failures', function () {
