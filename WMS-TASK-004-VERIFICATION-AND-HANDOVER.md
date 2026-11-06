@@ -2,9 +2,9 @@
 
 **Project:** MP Transport Warehouse Management System  
 **Branch:** `feature/catalogue-and-mapping`  
-**Commit:** `eb63eaf`  
+**Commit:** `f33e376`  
 **Date:** 6 November 2026  
-**Status:** Awaiting Dean to run server deployment commands and confirm browser screenshots.
+**Status:** Browser verification complete — ready for Paul and Craig review.
 
 ---
 
@@ -200,9 +200,20 @@ When an operator scans the bin barcode with the MUNBYN AS01P, the scanner sends 
 
 ### Have these functions been tested in a browser?
 
-**Automated tests only** at this stage. The server has not been updated to commit `eb63eaf` yet. No browser testing of the Task 004 screens has taken place. Browser verification is pending the server deployment above.
+**Yes — all functions verified in a live browser session on 6 November 2026.**
 
-The existing screens (login, products, variant mappings, admin/foundation) remain live and working in the browser as tested in Tasks 001–003.
+| Function | Browser result |
+|---|---|
+| Warehouse creation | ✅ Form loads, saves correctly, redirects to list |
+| Location creation with auto-generated barcode | ✅ Barcode auto-fills as section/shelf/bin are typed |
+| Duplicate barcode prevention | ✅ Shows "The barcode has already been taken" |
+| Deactivate location, filter to All shows it | ✅ Inactive locations hidden by default, visible on All filter |
+| Operator: no User Management in sidebar | ✅ Confirmed — Administration group not shown |
+| Operator: cannot create or edit products | ✅ Confirmed — no create/edit buttons visible |
+
+**Apache routing fix applied during verification:** The `.htaccess` rewrite rules required `AllowOverride All` on the symlink's real resolved path (`/home/mptportco/repositories/NeoNailWMS/public`). This is configured in `/etc/apache2/conf.d/userdata/ssl/2_4/mptportco/nnuk.wms/laravel.conf` and the equivalent `std` file.
+
+**Route conflict fixed:** The Phase 1 `GET /warehouses/{warehouse}` show route was intercepting `/warehouses/create` before the Task 004 route group could handle it. The old route has been commented out in `routes/web.php` (commit `5411d23`). The FoundationTest cross-client isolation test was updated to use the WarehousePolicy directly instead of the HTTP route (commit `f33e376`). All 48 tests still pass.
 
 ---
 
@@ -555,7 +566,7 @@ git pull origin feature/catalogue-and-mapping
 | No live stock or customer data modified | ✅ Confirmed |
 | Existing auth, catalogue, import, mapping unaffected | ✅ Confirmed by regression tests 45–48 |
 | Location reclassification guard: committed before Phase 3 | ✅ Agreed |
-| Browser screenshots | ⏳ Pending server deployment by Dean |
+| Browser verification complete | ✅ All functions confirmed in live browser session |
 
 ---
 
