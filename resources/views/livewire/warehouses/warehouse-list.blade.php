@@ -5,7 +5,7 @@
             <p class="mt-1 text-sm text-zinc-500">Physical warehouse locations for {{ auth()->user()->fulfilmentClient->name ?? 'your client' }}</p>
         </div>
         @can('create', App\Models\Warehouse::class)
-            <a href="{{ route('warehouses.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
+            <a wire:navigate href="{{ route('warehouses.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
                 <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 New Warehouse
             </a>
@@ -48,7 +48,7 @@
                         <td class="px-5 py-3.5 font-semibold text-zinc-900">{{ $warehouse->name }}</td>
                         <td class="px-5 py-3.5 text-zinc-500">{{ $warehouse->address ?? '—' }}</td>
                         <td class="px-5 py-3.5">
-                            <a href="{{ route('warehouses.locations', $warehouse) }}" class="text-indigo-600 hover:underline font-medium">
+                            <a wire:navigate href="{{ route('warehouses.locations', $warehouse) }}" class="text-indigo-600 hover:underline font-medium">
                                 {{ $warehouse->locations_count }} location{{ $warehouse->locations_count !== 1 ? 's' : '' }}
                             </a>
                         </td>
@@ -61,7 +61,7 @@
                         </td>
                         <td class="px-5 py-3.5 text-right">
                             @can('update', $warehouse)
-                                <a href="{{ route('warehouses.edit', $warehouse) }}" class="rounded-md px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">Edit</a>
+                                <a wire:navigate href="{{ route('warehouses.edit', $warehouse) }}" class="rounded-md px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">Edit</a>
                             @endcan
                         </td>
                     </tr>
@@ -69,7 +69,7 @@
                     <tr>
                         <td colspan="5" class="px-5 py-12 text-center">
                             <svg class="mx-auto size-8 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-                            <p class="mt-2 text-sm text-zinc-400">No warehouses found. <a href="{{ route('warehouses.create') }}" class="text-indigo-600 hover:underline">Create your first warehouse.</a></p>
+                            <p class="mt-2 text-sm text-zinc-400">No warehouses found. <a wire:navigate href="{{ route('warehouses.create') }}" class="text-indigo-600 hover:underline">Create your first warehouse.</a></p>
                         </td>
                     </tr>
                 @endforelse

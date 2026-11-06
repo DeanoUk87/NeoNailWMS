@@ -1,7 +1,7 @@
 <div class="space-y-6">
     <div class="flex items-center justify-between">
         <div class="flex items-center gap-4">
-            <a href="{{ route('warehouses.index') }}" class="rounded-lg p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors">
+            <a wire:navigate href="{{ route('warehouses.index') }}" class="rounded-lg p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors">
                 <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
             </a>
             <div>
@@ -10,7 +10,7 @@
             </div>
         </div>
         @can('create', App\Models\Location::class)
-            <a href="{{ route('warehouses.locations.create', $warehouse) }}" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
+            <a wire:navigate href="{{ route('warehouses.locations.create', $warehouse) }}" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
                 <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 New Location
             </a>
@@ -79,7 +79,7 @@
                         </td>
                         <td class="px-5 py-3.5 text-right">
                             @can('update', $location)
-                                <a href="{{ route('warehouses.locations.edit', [$warehouse, $location]) }}" class="rounded-md px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">Edit</a>
+                                <a wire:navigate href="{{ route('warehouses.locations.edit', [$warehouse, $location]) }}" class="rounded-md px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">Edit</a>
                             @endcan
                         </td>
                     </tr>
@@ -87,7 +87,7 @@
                     <tr>
                         <td colspan="7" class="px-5 py-12 text-center">
                             <svg class="mx-auto size-8 text-zinc-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                            <p class="mt-2 text-sm text-zinc-400">No locations yet. <a href="{{ route('warehouses.locations.create', $warehouse) }}" class="text-indigo-600 hover:underline">Add the first location.</a></p>
+                            <p class="mt-2 text-sm text-zinc-400">No locations yet. <a wire:navigate href="{{ route('warehouses.locations.create', $warehouse) }}" class="text-indigo-600 hover:underline">Add the first location.</a></p>
                         </td>
                     </tr>
                 @endforelse

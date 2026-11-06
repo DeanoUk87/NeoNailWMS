@@ -1,6 +1,6 @@
 <div class="max-w-2xl space-y-6">
     <div class="flex items-center gap-4">
-        <a href="{{ route('warehouses.locations', $warehouseId) }}" class="rounded-lg p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors">
+        <a wire:navigate href="{{ route('warehouses.locations', $warehouseId) }}" class="rounded-lg p-2 text-zinc-400 hover:bg-zinc-100 hover:text-zinc-600 transition-colors">
             <svg class="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
         </a>
         <div>
@@ -90,7 +90,7 @@
 
         <div class="flex gap-3">
             <button type="submit" class="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">Save Location</button>
-            <a href="{{ route('warehouses.locations', $warehouseId) }}" class="rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-700 shadow-sm hover:bg-zinc-50 transition-colors">Cancel</a>
+            <a wire:navigate href="{{ route('warehouses.locations', $warehouseId) }}" class="rounded-lg border border-zinc-300 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-700 shadow-sm hover:bg-zinc-50 transition-colors">Cancel</a>
         </div>
     </form>
 </div>

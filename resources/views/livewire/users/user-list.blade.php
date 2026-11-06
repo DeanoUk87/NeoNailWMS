@@ -5,7 +5,7 @@
             <p class="mt-1 text-sm text-zinc-500">Manage warehouse staff accounts and permissions.</p>
         </div>
         @can('create', App\Models\User::class)
-            <a href="{{ route('users.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
+            <a wire:navigate href="{{ route('users.create') }}" class="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-700 transition-colors">
                 <svg class="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/></svg>
                 New User
             </a>
@@ -77,7 +77,7 @@
                         </td>
                         <td class="px-5 py-3.5 text-right">
                             @can('update', $user)
-                                <a href="{{ route('users.edit', $user) }}" class="rounded-md px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">Edit</a>
+                                <a wire:navigate href="{{ route('users.edit', $user) }}" class="rounded-md px-3 py-1.5 text-xs font-semibold text-indigo-600 hover:bg-indigo-50 hover:text-indigo-700 transition-colors">Edit</a>
                             @endcan
                         </td>
                     </tr>
